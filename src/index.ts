@@ -4,28 +4,24 @@ import db from "./connection/db";
 import axios from "axios";
 import { ResponseMovies } from "./module/responseMovie";
 import movies from "./routes/movies";
+import workspace from "./routes/workspace";
+import section from "./routes/section";
 import socketio, { Socket } from "socket.io";
 import http from "http";
+
 const app = express();
+
+app.use(cors());
+app.options("*", cors() as any);
+
 app.set("port", process.env.PORT || 3001);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const server = http.createServer(app);
-const io = new socketio.Server(server);
-
 app.use("/movies", movies);
-
-app.get("/ciao", (_, res) => {
-  console.log("ciao");
-
-  res.json({ message: "ciao" });
-});
-
-io.on("connection", function (socket: socketio.Socket) {
-  console.log("a user connected");
-});
+app.use("/workspace", workspace);
+app.use("/section", section);
 
 // app.get("/", async (req, res) => {
 //   const conn = await db();

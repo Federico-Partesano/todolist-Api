@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Request, Response } from "express";
 import { ResponseMovies } from "../module/responseMovie";
-import { Socket } from "socket.io";
 export const moviesController = {
   searchMovie: async ({ query: { query } }: Request, res: Response) => {
     console.log("query", query);
