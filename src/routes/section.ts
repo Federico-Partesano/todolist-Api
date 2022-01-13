@@ -5,10 +5,10 @@ import { body, validationResult } from "express-validator";
 import { validateType } from "../utils/invalidReq";
 import { sectionController } from "../controllers/section";
 
-const { getSections, getSectionsByWorkSpace } = sectionController;
+const { getSections, getSectionsById } = sectionController;
 const router = express.Router();
 
-// router.get("/", getSections);
-router.get("/s", getSectionsByWorkSpace);
+router.get("/", getSections);
+router.get("/:id", getSectionsById);
 
 export default router;

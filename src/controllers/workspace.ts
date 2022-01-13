@@ -5,6 +5,9 @@ import db from "../connection/db";
 import { ResponseMovies } from "../module/responseMovie";
 import { invalidType } from "../utils/invalidReq";
 import { body, validationResult } from "express-validator";
+import { arrayUniqueSection, formattedSections } from "../utils/funtions";
+import { Section } from "../module/responseSection";
+import { WorkSpace } from "../module/responseWorkSpace";
 export const workSpaceController = {
   getWorkspaces: async (_: Request, res: Response) => {
     const [rows, fields] = await (
@@ -12,8 +15,31 @@ export const workSpaceController = {
     ).query("SELECT * FROM `workspace`");
     res.json(rows);
   },
+
+  getWorkspaceById: async ({ params: { id } }: Request, res: Response) => {
+    const [rows, fields] = await (
+      await db()
+    ).execute<WorkSpace[]>("SELECT * FROM `workspace` WHERE workspace.name=?", [
+      id,
+    ]);
+
+    const [rowsSections, fieldsSections] = await (
+      await db()
+    ).execute<Section[]>(
+      "SELECT * FROM section LEFT JOIN task ON section.id=task.section_id WHERE section.workspace_name=? ",
+      [id]
+    );
+
+    const nameSections = arrayUniqueSection(rowsSections);
+
+    const finalArr = formattedSections(nameSections, rowsSections);
+
+    res.json({ ...rows[0], sections: finalArr });
+  },
+
   putWorkSpace: async (req: Request, res: Response) => {
     const { name, type }: { name: string; type: "list" | "board" } = req.body;
+    console.log(name, type);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -31,7 +57,7 @@ export const workSpaceController = {
 
       const [rows2, fields2] = await (
         await db()
-      ).execute("INSERT INTO section (name, workspace_name) VALUES (?,?);", [
+      ).execute("INSERT INTO section (S_name, workspace_name) VALUES (?,?);", [
         name,
         name,
       ]);
@@ -49,13 +75,10 @@ export const workSpaceController = {
     res: Response
   ) => {
     try {
-      const [rows, fields] = await (
+      await (
         await db()
-      ).execute("    DELETE FROM workspace WHERE name=? AND type=?;", [
-        name,
-        type,
-      ]);
-      res.json({ message: rows });
+      ).execute("DELETE FROM workspace WHERE name=? AND type=?;", [name, type]);
+      res.json({ message: "success" });
     } catch (e) {
       res.json({ message: e });
     }

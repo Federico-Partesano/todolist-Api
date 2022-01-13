@@ -8,6 +8,7 @@ const db = async () =>
     database: "trello",
     port: 8889,
     multipleStatements: true,
+    connectionLimit: 100,
   });
 
 export default db;
