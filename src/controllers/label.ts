@@ -26,7 +26,6 @@ export const labelController = {
       "SELECT * FROM task inner join label on task.T_id= label.task_id where label.name like ?",
       [name]
     );
-    console.log(name);
     res.json(rows);
   },
 

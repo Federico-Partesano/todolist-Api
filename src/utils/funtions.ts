@@ -29,12 +29,13 @@ export const formattedSections = (
           element.name === row.S_name &&
           row.T_id !== null
       )
-      .map(({ content, T_id, section_id, date, priority, done }) => ({
+      .map(({ content, T_id, section_id, date, priority,description, done,  }) => ({
         content,
         T_id,
         section_id,
         date,
         priority,
+        description,
         done,
       })),
   }));

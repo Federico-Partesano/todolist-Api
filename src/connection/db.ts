@@ -1,14 +1,19 @@
-import mysql from "mysql2/promise";
+import mysql, { Pool } from "mysql2/promise";
 
-const db = async () =>
-  await mysql.createConnection({
+let globalPool: Pool | undefined = undefined;
+
+
+const db = async (): Promise<Pool> => {
+  if(globalPool) { return globalPool}
+   globalPool = await mysql.createPool({
     host: "localhost",
     user: "root",
     password: "root",
     database: "trello",
     port: 8889,
     multipleStatements: true,
-    connectionLimit: 100,
   });
+  return globalPool;
+}
 
 export default db;

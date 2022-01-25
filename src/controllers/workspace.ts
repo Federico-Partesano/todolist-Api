@@ -26,7 +26,7 @@ export const workSpaceController = {
     const [rowsSections, fieldsSections] = await (
       await db()
     ).execute<Section[]>(
-      "SELECT * FROM section LEFT JOIN task ON section.id=task.section_id WHERE section.workspace_name=? ",
+      "SELECT * FROM section LEFT JOIN task ON section.id=task.section_id AND task.done=0 WHERE section.workspace_name=? ",
       [id]
     );
 
@@ -39,7 +39,6 @@ export const workSpaceController = {
 
   putWorkSpace: async (req: Request, res: Response) => {
     const { name, type }: { name: string; type: "list" | "board" } = req.body;
-    console.log(name, type);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

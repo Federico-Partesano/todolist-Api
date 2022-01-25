@@ -33,4 +33,39 @@ export const sectionController = {
     console.log(id);
     res.json(rows);
   },
+
+  putSection: async ({ body: { nameSection, workspaceName } }: Request, res: Response) => {
+    if (!nameSection || !workspaceName) {
+      return res.json({ error: "insert valid credentials" });
+    }
+    try{
+    const [rows, fields] = await (
+      await db()
+    ).execute("INSERT INTO section (S_name, workspace_name) VALUES (?,?);", [nameSection, workspaceName]);
+
+    
+    res.json({message: 'success'});
+    } catch(e){
+      res.json({message: e})
+    }
+
+  },
+
+  deleteSection: async (
+    {
+      params: { id },
+    }: Request<{ id: number }>,
+    res: Response
+  ) => {
+    try {
+      await (
+        await db()
+      ).execute("DELETE FROM section WHERE id=?", [id]);
+      res.json({ message: "success" });
+    } catch (e) {
+      res.json({ message: e });
+    }
+  },
+
+
 };

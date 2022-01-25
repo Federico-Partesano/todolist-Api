@@ -4,6 +4,40 @@ import { Connection, ResultSetHeader } from "mysql2";
 import db from "../connection/db";
 import { Section } from "../module/responseSection";
 export const taskController = {
+
+  getTodayTasks: async (
+    _: Request,
+    res: Response
+  ) => {
+    try {
+      const [rows] = await (
+        await db()
+      ).query<ResultSetHeader>(
+        "SELECT * FROM `task` WHERE task.date LIKE CURRENT_DATE() AND task.done = 0;",
+      );
+
+      res.json( rows );
+    } catch (e) {
+      res.json({ message: e });
+    }
+  },
+  getTodayExpiredTasks: async (
+    req: Request,
+    res: Response
+  ) => {
+    try {
+      const [rows] = await (
+        await db()
+      ).query<ResultSetHeader>(
+        "SELECT * FROM `task` WHERE task.date < CURRENT_DATE() AND task.done = 0;",
+      );
+      res.json( rows );
+    } catch (e) {
+      res.json({ message: e });
+    }
+  },
+  
+  
   putTask: async (
     {
       body: { content, section_id, priority, description, date, labels },
@@ -68,7 +102,7 @@ export const taskController = {
   },
 
   changeDoneTask: async (
-    { params: { id } }: Request<{ id: number }>,
+    { body: { id } }: Request<{},{},{ id: number }>,
     res: Response
   ) => {
     try {
